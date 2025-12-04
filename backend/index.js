@@ -83,3 +83,17 @@ app.get("/api/habits", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+// / ===== HABIT ROUTES (Protected) =====
+
+// GET all habits
+app.get("/api/habits", authMiddleware, async (req, res) => {
+  try {
+    // req.user.id comes from Firebase Admin verification
+    const habits = await Habit.find({ userId: req.user.id }).sort({ createdAt: -1 });
+    res.json(habits);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
