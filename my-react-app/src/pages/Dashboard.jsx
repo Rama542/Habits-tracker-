@@ -157,3 +157,55 @@ return (
                     <button type="submit">Add Habit</button>
                 </form>
             </div>
+
+            {/* Progress Graphs */}
+            {habits.length > 0 && (
+                <div className="progress-section">
+                    <h2 className="section-title">📈 Progress Trends</h2>
+                    <div className="graphs-grid">
+                        {habits.slice(0, 3).map((habit) => (
+                            <ProgressGraph
+                                key={habit._id}
+                                data={generateProgressData(habit)}
+                                habitName={habit.name}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Habits List */}
+            <div className="habits-section">
+                <h2 className="section-title">
+                    ✅ My Habits ({habits.length})
+                </h2>
+                {habits.length === 0 ? (
+                    <div style={{
+                        background: 'white',
+                        borderRadius: '16px',
+                        padding: '48px',
+                        textAlign: 'center',
+                        color: '#64748b'
+                    }}>
+                        <p style={{ fontSize: '48px', marginBottom: '16px' }}>🎯</p>
+                        <h3 style={{ marginBottom: '8px', color: '#0f172a' }}>No habits yet!</h3>
+                        <p>Add your first habit above to start tracking your progress</p>
+                    </div>
+                ) : (
+                    <div className="habits-grid">
+                        {habits.map((habit) => (
+                            <HabitCard
+                                key={habit._id}
+                                habit={habit}
+                                onMarkDone={handleMarkDone}
+                                onEdit={handleEditHabit}
+                                onDelete={handleDeleteHabit}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    </div>
+);
+}
