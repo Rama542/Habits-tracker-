@@ -52,3 +52,13 @@ const HabitSchema = new Schema(
   },
   { timestamps: true }
 );
+
+const TimetableEntrySchema = new Schema(
+  {
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    dayOfWeek: { type: String, required: true },
+    title: { type: String, required: true },
+    description: { type: String, default: "" },
+  },
+  { timestamps: true }
+);
