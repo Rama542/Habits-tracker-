@@ -19,3 +19,19 @@ export default function Dashboard() {
     const [habitName, setHabitName] = useState("");
     const [habitDesc, setHabitDesc] = useState("");
     const [habitFreq, setHabitFreq] = useState("daily");
+
+    useEffect(() => {
+        loadHabits();
+    }, []);
+
+    async function loadHabits() {
+        try {
+            const res = await getHabits();
+            setHabits(Array.isArray(res.data) ? res.data : []);
+        } catch (err) {
+            console.error("Load habits error:", err);
+            setHabits([]);
+        } finally {
+            setLoading(false);
+        }
+    }
