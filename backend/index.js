@@ -36,3 +36,19 @@ mongoose
     console.error("✖ MongoDB connection error:", err);
     process.exit(1);
   });
+
+// ===== Mongoose Schemas & Models =====
+const { Schema, model } = mongoose;
+
+const HabitSchema = new Schema(
+  {
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    name: { type: String, required: true },
+    description: { type: String, default: "" },
+    frequency: { type: String, default: "daily" },
+    streak: { type: Number, default: 0 },
+    totalCompletions: { type: Number, default: 0 },
+    lastDoneDate: { type: Date, default: null },
+  },
+  { timestamps: true }
+);
