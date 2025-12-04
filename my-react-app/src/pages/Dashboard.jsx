@@ -54,3 +54,14 @@ export default function Dashboard() {
         console.error("Create habit error:", err);
     }
 }
+
+async function handleMarkDone(id) {
+    try {
+        const res = await markHabitDone(id);
+        if (res?.data) {
+            setHabits((p) => p.map((h) => (h._id === id ? res.data : h)));
+        }
+    } catch (err) {
+        console.error("Mark done error:", err);
+    }
+}
