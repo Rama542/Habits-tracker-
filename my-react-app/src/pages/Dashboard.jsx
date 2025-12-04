@@ -36,176 +36,180 @@ export default function Dashboard() {
         }
     }
 
-    try {
-        const res = await createHabit({
-            name: habitName,
-            description: habitDesc,
-            frequency: habitFreq
-        });
+    async function handleCreateHabit(e) {
+        e.preventDefault();
+        if (!habitName.trim()) return;
 
-        if (res?.data) {
-            setHabits((p) => [...p, res.data]);
+        try {
+            const res = await createHabit({
+                name: habitName,
+                description: habitDesc,
+                frequency: habitFreq
+            });
+
+            if (res?.data) {
+                setHabits((p) => [...p, res.data]);
+            }
+
+            setHabitName("");
+            setHabitDesc("");
+            setHabitFreq("daily");
+        } catch (err) {
+            console.error("Create habit error:", err);
         }
-
-        setHabitName("");
-        setHabitDesc("");
-        setHabitFreq("daily");
-    } catch (err) {
-        console.error("Create habit error:", err);
     }
-}
 
-async function handleMarkDone(id) {
-    try {
-        const res = await markHabitDone(id);
-        if (res?.data) {
-            setHabits((p) => p.map((h) => (h._id === id ? res.data : h)));
+    async function handleMarkDone(id) {
+        try {
+            const res = await markHabitDone(id);
+            if (res?.data) {
+                setHabits((p) => p.map((h) => (h._id === id ? res.data : h)));
+            }
+        } catch (err) {
+            console.error("Mark done error:", err);
         }
-    } catch (err) {
-        console.error("Mark done error:", err);
     }
-}
 
-async function handleDeleteHabit(id) {
-    if (!window.confirm("Delete this habit?")) return;
+    async function handleDeleteHabit(id) {
+        if (!window.confirm("Delete this habit?")) return;
 
-    try {
-        await deleteHabit(id);
-        setHabits((p) => p.filter((h) => h._id !== id));
-    } catch (err) {
-        console.error("Delete habit error:", err);
+        try {
+            await deleteHabit(id);
+            setHabits((p) => p.filter((h) => h._id !== id));
+        } catch (err) {
+            console.error("Delete habit error:", err);
+        }
     }
-}
 
-function handleEditHabit(habit) {
-    setHabitName(habit.name);
-    setHabitDesc(habit.description || "");
-    setHabitFreq(habit.frequency || "daily");
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+    function handleEditHabit(habit) {
+        setHabitName(habit.name);
+        setHabitDesc(habit.description || "");
+        setHabitFreq(habit.frequency || "daily");
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-// Generate sample progress data for graphs
-function generateProgressData(habit) {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const streak = habit.streak || 0;
-    const total = habit.totalCompletions || 0;
+    // Generate sample progress data for graphs
+    function generateProgressData(habit) {
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const streak = habit.streak || 0;
+        const total = habit.totalCompletions || 0;
 
-    // Simulate weekly data based on current stats
-    return days.map((day, index) => ({
-        day,
-        completions: Math.max(0, streak - (6 - index) + Math.floor(Math.random() * 2))
-    }));
-}
+        // Simulate weekly data based on current stats
+        return days.map((day, index) => ({
+            day,
+            completions: Math.max(0, streak - (6 - index) + Math.floor(Math.random() * 2))
+        }));
+    }
 
-if (loading) {
-    return <div className="dashboard"><div className="loading">Loading...</div></div>;
-}
+    if (loading) {
+        return <div className="dashboard"><div className="loading">Loading...</div></div>;
+    }
 
-return (
-    <div className="dashboard">
-        <div className="dashboard-container">
-            {/* Header */}
-            <div className="dashboard-header">
-                <h1>Welcome back, {userName}! 👋</h1>
-                <p>Track your habits and watch your progress grow</p>
-                <button
-                    className="logout-btn"
-                    style={{
-                        position: 'absolute',
-                        top: '24px',
-                        right: '24px',
-                        padding: '10px 20px',
-                        borderRadius: '10px',
-                        border: 'none',
-                        background: '#f1f5f9',
-                        color: '#475569',
-                        fontWeight: '600',
-                        cursor: 'pointer'
-                    }}
-                    onClick={() => {
-                        localStorage.removeItem("authToken");
-                        localStorage.removeItem("authUser");
-                        window.location.href = "/auth";
-                    }}
-                >
-                    Logout
-                </button>
-            </div>
-
-            {/* Add Habit Form */}
-            <div className="add-habit-section">
-                <h2 className="section-title">➕ Add New Habit</h2>
-                <form className="habit-form" onSubmit={handleCreateHabit}>
-                    <input
-                        placeholder="Habit name (e.g., Morning Exercise)"
-                        value={habitName}
-                        onChange={(e) => setHabitName(e.target.value)}
-                        required
-                    />
-                    <input
-                        placeholder="Description (optional)"
-                        value={habitDesc}
-                        onChange={(e) => setHabitDesc(e.target.value)}
-                    />
-                    <select
-                        value={habitFreq}
-                        onChange={(e) => setHabitFreq(e.target.value)}
+    return (
+        <div className="dashboard">
+            <div className="dashboard-container">
+                {/* Header */}
+                <div className="dashboard-header">
+                    <h1>Welcome back, {userName}! 👋</h1>
+                    <p>Track your habits and watch your progress grow</p>
+                    <button
+                        className="logout-btn"
+                        style={{
+                            position: 'absolute',
+                            top: '24px',
+                            right: '24px',
+                            padding: '10px 20px',
+                            borderRadius: '10px',
+                            border: 'none',
+                            background: '#f1f5f9',
+                            color: '#475569',
+                            fontWeight: '600',
+                            cursor: 'pointer'
+                        }}
+                        onClick={() => {
+                            localStorage.removeItem("authToken");
+                            localStorage.removeItem("authUser");
+                            window.location.href = "/auth";
+                        }}
                     >
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                    </select>
-                    <button type="submit">Add Habit</button>
-                </form>
-            </div>
-
-            {/* Progress Graphs */}
-            {habits.length > 0 && (
-                <div className="progress-section">
-                    <h2 className="section-title">📈 Progress Trends</h2>
-                    <div className="graphs-grid">
-                        {habits.slice(0, 3).map((habit) => (
-                            <ProgressGraph
-                                key={habit._id}
-                                data={generateProgressData(habit)}
-                                habitName={habit.name}
-                            />
-                        ))}
-                    </div>
+                        Logout
+                    </button>
                 </div>
-            )}
 
-            {/* Habits List */}
-            <div className="habits-section">
-                <h2 className="section-title">
-                    ✅ My Habits ({habits.length})
-                </h2>
-                {habits.length === 0 ? (
-                    <div style={{
-                        background: 'white',
-                        borderRadius: '16px',
-                        padding: '48px',
-                        textAlign: 'center',
-                        color: '#64748b'
-                    }}>
-                        <p style={{ fontSize: '48px', marginBottom: '16px' }}>🎯</p>
-                        <h3 style={{ marginBottom: '8px', color: '#0f172a' }}>No habits yet!</h3>
-                        <p>Add your first habit above to start tracking your progress</p>
-                    </div>
-                ) : (
-                    <div className="habits-grid">
-                        {habits.map((habit) => (
-                            <HabitCard
-                                key={habit._id}
-                                habit={habit}
-                                onMarkDone={handleMarkDone}
-                                onEdit={handleEditHabit}
-                                onDelete={handleDeleteHabit}
-                            />
-                        ))}
+                {/* Add Habit Form */}
+                <div className="add-habit-section">
+                    <h2 className="section-title">➕ Add New Habit</h2>
+                    <form className="habit-form" onSubmit={handleCreateHabit}>
+                        <input
+                            placeholder="Habit name (e.g., Morning Exercise)"
+                            value={habitName}
+                            onChange={(e) => setHabitName(e.target.value)}
+                            required
+                        />
+                        <input
+                            placeholder="Description (optional)"
+                            value={habitDesc}
+                            onChange={(e) => setHabitDesc(e.target.value)}
+                        />
+                        <select
+                            value={habitFreq}
+                            onChange={(e) => setHabitFreq(e.target.value)}
+                        >
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                        </select>
+                        <button type="submit">Add Habit</button>
+                    </form>
+                </div>
+
+                {/* Progress Graphs */}
+                {habits.length > 0 && (
+                    <div className="progress-section">
+                        <h2 className="section-title">📈 Progress Trends</h2>
+                        <div className="graphs-grid">
+                            {habits.slice(0, 3).map((habit) => (
+                                <ProgressGraph
+                                    key={habit._id}
+                                    data={generateProgressData(habit)}
+                                    habitName={habit.name}
+                                />
+                            ))}
+                        </div>
                     </div>
                 )}
+
+                {/* Habits List */}
+                <div className="habits-section">
+                    <h2 className="section-title">
+                        ✅ My Habits ({habits.length})
+                    </h2>
+                    {habits.length === 0 ? (
+                        <div style={{
+                            background: 'white',
+                            borderRadius: '16px',
+                            padding: '48px',
+                            textAlign: 'center',
+                            color: '#64748b'
+                        }}>
+                            <p style={{ fontSize: '48px', marginBottom: '16px' }}>🎯</p>
+                            <h3 style={{ marginBottom: '8px', color: '#0f172a' }}>No habits yet!</h3>
+                            <p>Add your first habit above to start tracking your progress</p>
+                        </div>
+                    ) : (
+                        <div className="habits-grid">
+                            {habits.map((habit) => (
+                                <HabitCard
+                                    key={habit._id}
+                                    habit={habit}
+                                    onMarkDone={handleMarkDone}
+                                    onEdit={handleEditHabit}
+                                    onDelete={handleDeleteHabit}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
 }
