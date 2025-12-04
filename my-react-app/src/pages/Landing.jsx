@@ -8,7 +8,7 @@ export default function Landing() {
 
     return (
         <section className="hero-bg">
-            <img src={bgImage} alt="mountain background" className="hero-bg-img" />
+
             <div className="hero-content">
                 <h1>
                     Build Golden Habits,
