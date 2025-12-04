@@ -35,3 +35,22 @@ export default function Dashboard() {
             setLoading(false);
         }
     }
+
+    try {
+        const res = await createHabit({
+            name: habitName,
+            description: habitDesc,
+            frequency: habitFreq
+        });
+
+        if (res?.data) {
+            setHabits((p) => [...p, res.data]);
+        }
+
+        setHabitName("");
+        setHabitDesc("");
+        setHabitFreq("daily");
+    } catch (err) {
+        console.error("Create habit error:", err);
+    }
+}
