@@ -39,3 +39,103 @@ function AuthPage() {
                         Sign Up
                     </button>
                 </div>
+
+                {/* Forms */}
+                {mode === "login" ? <LoginForm /> : <SignupForm />}
+
+                {/* Footer Switch */}
+                <p className="auth-footer">
+                    {mode === "login" ? (
+                        <>
+                            Don't have an account?{" "}
+                            <button
+                                type="button"
+                                className="link-btn"
+                                onClick={() => setMode("signup")}
+                            >
+                                Sign up
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            Already have an account?{" "}
+                            <button
+                                type="button"
+                                className="link-btn"
+                                onClick={() => setMode("login")}
+                            >
+                                Log in
+                            </button>
+                        </>
+                    )}
+                </p>
+            </div>
+        </div>
+    );
+}
+
+
+// LOGIN FORM
+
+function LoginForm() {
+    const navigate = useNavigate();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setError("");
+
+        try {
+            const res = await login({ email, password });
+            localStorage.setItem("authUser", JSON.stringify(res.data.user));
+            navigate("/dashboard");
+        } catch (err) {
+            console.error(err);
+            setError(err.response?.data?.message || "Login failed");
+        }
+    }
+
+    return (
+        <form className="auth-form" onSubmit={handleSubmit}>
+            {error && <div className="error-message">{error}</div>}
+            <div className="form-group">
+                <label>Email</label>
+                <input
+                    type="email"
+                    placeholder="you@example.com"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
+            </div>
+
+            <div className="form-group">
+                <label>Password</label>
+                <input
+                    type="password"
+                    placeholder="Enter your password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+            </div>
+
+            <div className="form-extra">
+                <label className="checkbox">
+                    <input type="checkbox" />
+                    <span>Remember me</span>
+                </label>
+                <button type="button" className="link-btn">
+                    Forgot password?
+                </button>
+            </div>
+
+            <button type="submit" className="primary-btn">
+                Login
+            </button>
+        </form>
+    );
+}
+
