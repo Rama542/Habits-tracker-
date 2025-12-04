@@ -139,3 +139,88 @@ function LoginForm() {
     );
 }
 
+
+//  SIGNUP FORM
+
+function SignupForm() {
+    const navigate = useNavigate();
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [error, setError] = useState("");
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setError("");
+
+        if (password !== confirmPassword) {
+            setError("Passwords do not match");
+            return;
+        }
+
+        try {
+            const res = await register({ username, email, password });
+            localStorage.setItem("authUser", JSON.stringify(res.data.user));
+            navigate("/dashboard");
+        } catch (err) {
+            console.error(err);
+            setError(err.response?.data?.message || "Signup failed");
+        }
+    }
+
+    return (
+        <form className="auth-form" onSubmit={handleSubmit}>
+            {error && <div className="error-message">{error}</div>}
+            <div className="form-group">
+                <label>Username</label>
+                <input
+                    type="text"
+                    placeholder="johndoe"
+                    required
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                />
+            </div>
+
+            <div className="form-group">
+                <label>Email</label>
+                <input
+                    type="email"
+                    placeholder="you@example.com"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
+            </div>
+
+            <div className="form-group">
+                <label>Password</label>
+                <input
+                    type="password"
+                    placeholder="Create a password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+            </div>
+
+            <div className="form-group">
+                <label>Confirm Password</label>
+                <input
+                    type="password"
+                    placeholder="Repeat your password"
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+            </div>
+
+            <button type="submit" className="primary-btn">
+                Create Account
+            </button>
+        </form>
+    );
+}
+
+export default AuthPage;
