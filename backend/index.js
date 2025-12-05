@@ -254,7 +254,7 @@ app.delete("/api/timetable/:id", authMiddleware, async (req, res) => {
 });
 
 // ===== START SERVER =====
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`✅ Backend running on port ${PORT}`);
 });
