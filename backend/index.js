@@ -192,3 +192,72 @@ app.delete("/api/habits/:id", authMiddleware, async (req, res) => {
   }
 });
 
+// ===== TIMETABLE ROUTES (Protected) =====
+
+// GET all entries
+app.get("/api/timetable", authMiddleware, async (req, res) => {
+  try {
+    const entries = await TimetableEntry.find({ userId: req.user.id }).sort({ createdAt: -1 });
+    res.json(entries);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// POST create entry
+app.post("/api/timetable", authMiddleware, async (req, res) => {
+  try {
+    const { dayOfWeek, title, description } = req.body;
+    if (!dayOfWeek || !title) return res.status(400).json({ message: "Missing fields" });
+    const newEntry = await TimetableEntry.create({
+      userId: req.user.id,
+      dayOfWeek,
+      title,
+      description: description || "",
+    });
+    res.status(201).json(newEntry);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// PUT update entry
+app.put("/api/timetable/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updated = await TimetableEntry.findOneAndUpdate(
+      { _id: id, userId: req.user.id },
+      req.body,
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ message: "Entry not found" });
+    res.json(updated);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// DELETE entry
+app.delete("/api/timetable/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await TimetableEntry.findOneAndDelete({ _id: id, userId: req.user.id });
+    if (!deleted) return res.status(404).json({ message: "Entry not found" });
+    res.json({ message: "Entry deleted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// ===== START SERVER =====
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`✅ Backend running on port ${PORT}`);
+});
+
+
+
