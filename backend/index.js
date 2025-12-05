@@ -97,3 +97,98 @@ app.get("/api/habits", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+
+// POST create habit
+app.post("/api/habits", authMiddleware, async (req, res) => {
+  try {
+    const { name, description, frequency } = req.body;
+    if (!name) return res.status(400).json({ message: "Name is required" });
+
+    const newHabit = await Habit.create({
+      userId: req.user.id,
+      name,
+      description: description || "",
+      frequency: frequency || "daily",
+    });
+
+    res.status(201).json(newHabit);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// PUT update habit
+app.put("/api/habits/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updated = await Habit.findOneAndUpdate(
+      { _id: id, userId: req.user.id },
+      req.body,
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ message: "Habit not found" });
+    res.json(updated);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// PUT mark habit as done
+app.put("/api/habits/:id/done", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const habit = await Habit.findOne({ _id: id, userId: req.user.id });
+    if (!habit) return res.status(404).json({ message: "Habit not found" });
+
+    const today = new Date();
+    const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    if (!habit.lastDoneDate) {
+      habit.streak = 1;
+    } else {
+      const last = new Date(habit.lastDoneDate);
+      const lastDate = new Date(last.getFullYear(), last.getMonth(), last.getDate());
+      const diffDays = Math.round((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 1) habit.streak += 1;
+      else if (diffDays > 1) habit.streak = 1;
+    }
+
+    const last = habit.lastDoneDate ? new Date(habit.lastDoneDate) : null;
+    const lastDateOnly = last
+      ? new Date(last.getFullYear(), last.getMonth(), last.getDate())
+      : null;
+    const alreadyMarkedToday =
+      lastDateOnly && lastDateOnly.getTime() === todayDate.getTime();
+
+    if (!alreadyMarkedToday) {
+      habit.totalCompletions += 1;
+      habit.lastDoneDate = today;
+      await habit.save();
+    } else {
+      await habit.save();
+    }
+
+    res.json(habit);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// DELETE habit
+app.delete("/api/habits/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await Habit.findOneAndDelete({ _id: id, userId: req.user.id });
+    if (!deleted) return res.status(404).json({ message: "Habit not found" });
+    res.json({ message: "Habit deleted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
