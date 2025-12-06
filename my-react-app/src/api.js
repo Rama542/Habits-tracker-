@@ -2,7 +2,7 @@
 import axios from "axios";
 
 // ❗ VITE uses import.meta.env, NOT process.env
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
+const API_BASE = import.meta.env.VITE_API_BASE || "https://habits-tracker-t7el.onrender.com/api";
 
 export const api = axios.create({
   baseURL: API_BASE,
