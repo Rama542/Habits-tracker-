@@ -15,7 +15,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174", "https://habits-tracker-nu-ten.vercel.app/"],
+    origin: ["http://localhost:5173", "http://localhost:5174", "https://habits-tracker-nu-ten.vercel.app"],
     credentials: true,
   })
 );
