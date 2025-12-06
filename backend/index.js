@@ -70,6 +70,9 @@ const TimetableEntry = model("TimetableEntry", TimetableEntrySchema);
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 
+app.get('/test', (req, res) => {
+  res.send('Backend is working!');
+})
 // ===== HABIT ROUTES (Protected) =====
 
 // GET all habits
