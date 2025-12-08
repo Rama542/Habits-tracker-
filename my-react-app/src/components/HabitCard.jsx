@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function HabitCard({ habit, onMarkDone, onEdit, onDelete }) {
+export default function HabitCard({ habit, onMarkDone, onDelete }) {
     const isCompletedToday = habit.lastDoneDate &&
         new Date(habit.lastDoneDate).toDateString() === new Date().toDateString();
 
@@ -54,9 +54,7 @@ export default function HabitCard({ habit, onMarkDone, onEdit, onDelete }) {
                         <span>✓</span> Mark as Done
                     </button>
                 )}
-                <button className="action-btn secondary" onClick={() => onEdit(habit)}>
-                    <span>✏️</span> Edit
-                </button>
+
                 <button className="action-btn danger" onClick={() => onDelete(habit._id)}>
                     <span>🗑️</span> Delete
                 </button>
